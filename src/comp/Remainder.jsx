@@ -6,13 +6,14 @@ import List from "./List";
 import { useGlobalContext } from "../Context";
 
 const Remainder = () => {
+  const { addData, readData, remainders } = useGlobalContext();
+
   const [input, setInput] = useState("");
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const { addData, readData, remainders } = useGlobalContext();
   useEffect(() => {
     readData();
   }, []);

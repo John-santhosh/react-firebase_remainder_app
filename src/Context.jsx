@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import { db } from "./config/firebase-config";
 const GlobalContext = createContext();
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   collection,
@@ -28,29 +28,31 @@ export function GlobalAppContext({ children }) {
         timestamp: serverTimestamp(),
       });
 
-      console.log(docRef.id);
+      // console.log(docRef.id);
       readData();
     } catch (err) {
       console.log(err);
     }
   }
 
-  async function editRemainder(id, type, value) {
+  async function editRemainder(id, action, value) {
     const res = remainders.find((item) => item.id === id);
-    // console.log(type, value);
+    // console.log(action, value);
     // console.log(res.isChecked);
     const editRef = doc(db, "remainder", id);
     try {
-      if (type === "CHECKBOX") {
+      if (action === "CHECKBOX") {
         await updateDoc(editRef, {
           isChecked: !res.isChecked,
+          timestamp: serverTimestamp(),
         });
         readData();
       }
 
-      if (type === "REMAINDER") {
+      if (action === "REMAINDER") {
         await updateDoc(editRef, {
           remainder: value,
+          timestamp: serverTimestamp(),
         });
         readData();
       }

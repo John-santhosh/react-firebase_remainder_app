@@ -4,8 +4,9 @@ import Modal from "react-bootstrap/Modal";
 import { useGlobalContext } from "../Context";
 
 const EditRemainder = ({ id, remainder }) => {
-  const [value, setValue] = useState(remainder);
   const { editRemainder } = useGlobalContext();
+
+  const [value, setValue] = useState(remainder);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
