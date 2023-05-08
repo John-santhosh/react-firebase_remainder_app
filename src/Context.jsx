@@ -5,40 +5,57 @@ import { nanoid } from "nanoid";
 import { useState } from "react";
 
 import {
-  collection,
+  collection, //READ & ADD DATA
   addDoc, //add data
   getDocs, //read data
   deleteDoc, // delete using id/ref
   updateDoc, //update using id/reference
-  doc,
+  doc, // DELETE & EDIT DATA
   serverTimestamp,
 } from "firebase/firestore";
-// custom hook
 
 export function GlobalAppContext({ children }) {
   const [remainders, setRemainder] = useState([]);
 
+  // Read data
+  async function readData() {
+    const collectionRef = collection(db, "remainder");
+    try {
+      const querySnapshot = await getDocs(collectionRef);
+      let remainderData = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+        };
+      });
+      setRemainder(remainderData);
+      console.log(remainders);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // add-Data
   async function addData(remainder) {
     try {
       const collectionRef = collection(db, "remainder");
       const docRef = await addDoc(collectionRef, {
+        // we don't have to specify an ID , addDoc() will automatically create it
         id: nanoid(),
         remainder: remainder,
         isChecked: false,
         timestamp: serverTimestamp(),
       });
-
-      // console.log(docRef.id);
+      // console.log(docRef);
       readData();
     } catch (err) {
       console.log(err);
     }
   }
 
+  // edit data
   async function editRemainder(id, action, value) {
     const res = remainders.find((item) => item.id === id);
-    // console.log(action, value);
-    // console.log(res.isChecked);
     const editRef = doc(db, "remainder", id);
     try {
       if (action === "CHECKBOX") {
@@ -61,27 +78,8 @@ export function GlobalAppContext({ children }) {
     }
   }
 
-  async function readData() {
-    const collectionRef = collection(db, "remainder");
-    try {
-      const querySnapshot = await getDocs(collectionRef);
-      let remainderData = querySnapshot.docs.map((doc) => {
-        return {
-          ...doc.data(),
-          id: doc.id,
-        };
-      });
-      setRemainder(remainderData);
-      // console.log(remainderData);
-    } catch (error) {
-      console.log(error);
-    }
-    // console.log(remainderData);
-  }
-
+  // DELETE DATA
   async function deleteRemainder(id) {
-    // console.log(id);
-    // console.log(remainders);
     const res = remainders.filter((item) => item.id !== id);
     console.log(res);
     await deleteDoc(doc(db, "remainder", id));
@@ -104,4 +102,5 @@ export function GlobalAppContext({ children }) {
   );
 }
 
+// custom hook
 export const useGlobalContext = () => useContext(GlobalContext);
